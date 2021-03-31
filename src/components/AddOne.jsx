@@ -124,7 +124,7 @@ let allDrinkNamesDuplicates =[]
 let allDrinkOzDuplicates =[]
 props.drinks.forEach((e)=>{
   allDrinkNamesDuplicates.push(e.drink_name)
-  allDrinkOzDuplicates.push(e.drink_oz)
+  allDrinkOzDuplicates.sort(function(a, b){return a-b}).push(e.drink_oz)
 })
 let allDrinkNames=[...new Set(allDrinkNamesDuplicates)]
 let allDrinkOz =[...new Set(allDrinkOzDuplicates)]
