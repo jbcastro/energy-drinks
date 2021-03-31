@@ -23,13 +23,13 @@ export function HomePage() {
   //querying the database for users and drinkns and loading it all into the frontend
   function getUsers() {
     fetch(`/api/users`)
-    .then((response) => response.json())
+    .then((res) => res.json())
     .then(users => setUsers(users))
     
   }
   function getDrinks() {
     fetch(`/api/drinks`)
-    .then((response) => response.json())
+    .then((res) => res.json())
     .then(drinks => setDrinks(drinks))
     
   }

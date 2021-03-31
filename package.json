@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "homepage": ".",
-  "engines":{
-    "node":"12.13.0",
-    "npm":"6.12.0"
+  "engines": {
+    "node": "12.13.0",
+    "npm": "6.12.0"
   },
-  
+  "proxy": "http://localhost:8000/",
   "description": "",
   "dependencies": {
     "@date-io/date-fns": "^1.3.13",
@@ -30,7 +30,6 @@
     "react-scripts": "^4.0.3",
     "web-vitals": "^1.0.1"
   },
- 
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
@@ -39,7 +38,6 @@
     "server": "nodemon -r dotenv/config ./src/server/server.js",
     "client": "react-scripts start",
     "dev": "concurrently \"npm run server\" \"npm run client\""
-   
   },
   "eslintConfig": {
     "extends": [

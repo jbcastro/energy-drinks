@@ -15,6 +15,8 @@ import {
   KeyboardDatePicker,
 } from '@material-ui/pickers';
 import TextField from '@material-ui/core/TextField';
+
+//theme for material UI
 const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
@@ -33,10 +35,13 @@ const useStyles = makeStyles((theme) => ({
 export default function AddOne(props){
   const classes = useStyles();
   let userDrinks = props.userDrinks
+
+  //hooks for selecting a date for drinks already entered, then returning what drinks and how many ounces
   const [selectedDateEntered, setSelectedDateEntered] = React.useState(new Date());
   const [drinkByDate,setDrinkByDate]=React.useState()
   const [totalOzByDate,setTotalOzByDate]=React.useState()
 
+  //when a date is selected this filters all drinks to just the drinks for said day, and add up the amount of drinks and ounces
   const handleDateChangeEntered = (date) => {
     var n=date.toLocaleDateString();
     var dateObject = new Date(n)
@@ -53,8 +58,17 @@ export default function AddOne(props){
     })
     setTotalOzByDate(count)
   };
+
+  //hooks for what will be saved to the DB when the form is submitted
+  const [drinkAndOzAndNameForSubmit,setDrinkAndOzAndNameForSubmit]=React.useState({
+    drink_name:{},
+    drink_oz:{},
+    PersonID:props.curUser.PersonID,
+    dateAdded:{}
   
+  })
   useEffect(()=>{
+    //when the user is changed this allows the date to stay the same and updates the drinks for the new user chosen
     setDrinkAndOzAndNameForSubmit({...drinkAndOzAndNameForSubmit,PersonID:props.curUser.PersonID})
     if(userDrinks.length>0){
         const filteredDrinks = userDrinks.filter((drink)=>
@@ -71,55 +85,36 @@ export default function AddOne(props){
     }else{
       setDrinkByDate()
     }
-   },[props.curUser])
+   },[props.curUser,userDrinks])
   
 
-useEffect(()=>{
-  if(userDrinks.length>0){
-    const filteredDrinks = userDrinks.filter((drink)=>
-      new Date(drink.dateAdded).getFullYear()==new Date(selectedDateEntered).getFullYear()&&
-      new Date(drink.dateAdded).getMonth()==new Date(selectedDateEntered).getMonth()&&
-      new Date(drink.dateAdded).getDate()==new Date(selectedDateEntered).getDate()
-          )
-    setDrinkByDate(filteredDrinks)
-    let count =0
-    filteredDrinks.forEach((e)=>{
-      count = count + e.drink_oz
-    })
-    setTotalOzByDate(count)
-}else{
-  setDrinkByDate()
-}
-},[userDrinks])
-  ///new
+
+  //this is the second calender in the add a drink form. It allows the date to be set so it can save to the DB
   const [selectedDateNew, setSelectedDateNew] = React.useState(new Date().toLocaleDateString());
 
   const handleDateChangeNew = (date) => {
     setSelectedDateNew(date);
     
   };
-
+  //changes the date for data to be saved when the calender changes
+  useEffect(()=>{
+    setDrinkAndOzAndNameForSubmit({...drinkAndOzAndNameForSubmit,dateAdded:selectedDateNew})
+  },[selectedDateNew])
   
-  // {props.curUser.full_name} drank {totalOzByDate} oz of energy drinks on {selectedDateEntered.toString()}
 
- 
+
+   //changes the date for data to be saved when the user changes
 useEffect(()=>{
   setDrinkAndOzAndNameForSubmit({...drinkAndOzAndNameForSubmit,PersonID:props.curUser.PersonID})
 },[props.users])
 
-const [drinkAndOzAndNameForSubmit,setDrinkAndOzAndNameForSubmit]=React.useState({
-  drink_name:{},
-  drink_oz:{},
-  PersonID:props.curUser.PersonID,
-  dateAdded:{}
-
-})
+//when a new drink name gets added this changes the data to be saved
 const handleChange =(e,f)=>{
   setDrinkAndOzAndNameForSubmit({...drinkAndOzAndNameForSubmit,[f]:e.target.value})
 }
-useEffect(()=>{
-  setDrinkAndOzAndNameForSubmit({...drinkAndOzAndNameForSubmit,dateAdded:selectedDateNew})
-},[selectedDateNew])
+
+
+
 //filter out duplicates to get a dropdown list for all the drink names and ounces
 let allDrinkNamesDuplicates =[]
 let allDrinkOzDuplicates =[]
@@ -130,22 +125,17 @@ props.drinks.forEach((e)=>{
 let allDrinkNames=[...new Set(allDrinkNamesDuplicates)]
 let allDrinkOz =[...new Set(allDrinkOzDuplicates)]
 
-//
+
   //show/hide add drink and add name form
 const [showAddForm,setShowAddForm]=React.useState(false)
-const [newDrinkNameForm,setNewDrinkNameForm]=React.useState(false)
-const clickSetNewNameForm=()=>{
-  setNewDrinkNameForm(!newDrinkNameForm)
-}
-const [newDrinkOzForm,setNewDrinkOzForm]=React.useState(false)
-const clickSetNewOzForm=()=>{
-  setNewDrinkOzForm(!newDrinkOzForm)
-}
 const handleExpandClick = ()=>{
   setShowAddForm(!showAddForm)
  
 }
+
+//the fetch to save the data
 function addEntry(e){
+//change date format to equal that of mySql
   var pad = function(num) { return ('00'+num).slice(-2) };
   var date =drinkAndOzAndNameForSubmit.dateAdded
   date = date.getUTCFullYear()         + '-' +
@@ -162,11 +152,11 @@ function addEntry(e){
 
    
   }
-
+//to alert when a part of the form is not filled out.
   if(Object.keys(data.drink_name).length==0){
     alert("enter a drink name!")
   }else if(isNaN(data.drink_oz)){
-    
+    //when the oz is a number is still thinks it is empty, however in the custom input of ounces it converts it to a strings. This checks if it is empty at either a string or number
     if(Object.keys(data.drink_oz).length==0){
       alert("enter a drink oz")
     }
@@ -186,6 +176,7 @@ function addEntry(e){
   .then((res) => res.json())
   .then((json)=>{
    data.DrinkID=json.insertId
+   //sends the new drink to the home page to update the state theer
     props.updateDrinks(data)
     
     
@@ -197,7 +188,7 @@ function addEntry(e){
   }
 
 }
-
+//changes the name on the open/close add form button
 const openOrClose =
 showAddForm?("Close"):("Open")
 
