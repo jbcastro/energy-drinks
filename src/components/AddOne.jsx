@@ -203,6 +203,10 @@ function addEntry(e){
 const openOrClose =
 showAddForm?("Close"):("Open")
 
+//to prevent the add name and add oz form from submitting when enter is pressed
+const onSubmit=(e)=>{
+  e.preventDefault)
+}
     return(
         <div style={{float:"right", display:"inline-block",backgroundColor:"coral",width:"50%"}} >
           <div style={{float:"left"}}>
@@ -270,7 +274,7 @@ showAddForm?("Close"):("Open")
           
         </Select>
       </FormControl>
-      <form className={classes.root} noValidate autoComplete="off" >
+      <form className={classes.root} noValidate autoComplete="off" onSubmit={onSubmit}>
           <TextField id="standard-basic" label="Or add a new name" field="newDrinkName" onChange={((e)=>handleChange(e,"drink_name"))} />
          
         </form>
@@ -295,7 +299,7 @@ showAddForm?("Close"):("Open")
         </Select>
       </FormControl>
       
-      <form className={classes.root} noValidate autoComplete="off" >
+      <form className={classes.root} noValidate autoComplete="off" onSubmit={onSubmit}>
           <TextField id="standard-basic" label="Or add a new Oz" type="number" field="newDrinkOz" onChange={((e)=>handleChange(e,"drink_oz"))} />
          
         </form>
