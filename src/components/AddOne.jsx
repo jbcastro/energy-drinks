@@ -43,15 +43,19 @@ export default function AddOne(props){
 
   //when a date is selected this filters all drinks to just the drinks for said day, and add up the amount of drinks and ounces
   const handleDateChangeEntered = (date) => {
+    console.log(date)
     var n=date.toLocaleDateString();
     var dateObject = new Date(n)
     setSelectedDateEntered(dateObject)
+    console.log(dateObject)
     const filteredDrinks = userDrinks.filter((drink)=>
       new Date(drink.dateAdded).getFullYear()==new Date(dateObject).getFullYear()&&
       new Date(drink.dateAdded).getMonth()==new Date(dateObject).getMonth()&&
       new Date(drink.dateAdded).getDate()==new Date(dateObject).getDate()
+     
           )
     setDrinkByDate(filteredDrinks)
+    console.log(filteredDrinks)
     let count =0
     filteredDrinks.forEach((e)=>{
       count = count + Number(e.drink_oz)
@@ -79,7 +83,7 @@ export default function AddOne(props){
         setDrinkByDate(filteredDrinks)
         let count =0
         filteredDrinks.forEach((e)=>{
-          count = count + e.drink_oz
+          count = count + Number(e.drink_oz)
         })
         setTotalOzByDate(count)
     }else{
@@ -90,7 +94,7 @@ export default function AddOne(props){
 
 
   //this is the second calender in the add a drink form. It allows the date to be set so it can save to the DB
-  const [selectedDateNew, setSelectedDateNew] = React.useState(new Date().toLocaleDateString());
+  const [selectedDateNew, setSelectedDateNew] = React.useState(new Date());
 
   const handleDateChangeNew = (date) => {
     setSelectedDateNew(date);
@@ -128,10 +132,15 @@ let allDrinkOz =[...new Set(allDrinkOzDuplicates)]
 
   //show/hide add drink and add name form
 const [showAddForm,setShowAddForm]=React.useState(false)
-const handleExpandClick = ()=>{
+const handleExpandClick = (date)=>{
   setShowAddForm(!showAddForm)
+  
  
 }
+
+useEffect(()=>{
+  setDrinkAndOzAndNameForSubmit({...drinkAndOzAndNameForSubmit,dateAdded:selectedDateNew})
+},[selectedDateNew])
 
 //the fetch to save the data
 function addEntry(e){
@@ -169,6 +178,7 @@ function addEntry(e){
   fetch(`/api/addEntry`, {
     method: 'POST', 
     headers: {
+      Accept: "application/json",
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(data),
@@ -188,6 +198,7 @@ function addEntry(e){
   }
 
 }
+
 //changes the name on the open/close add form button
 const openOrClose =
 showAddForm?("Close"):("Open")
@@ -216,7 +227,7 @@ showAddForm?("Close"):("Open")
               return(
                   <li key={d.DrinkID} >
                       Name:{d.drink_name}<br></br>
-                      Date Drank:{d.dateAdded.split('T')[0]}<br></br>
+                      Date Drank:{d.dateAdded.split(' ')[0]}<br></br>
                    
                       Ounces:{d.drink_oz}
                       </li>

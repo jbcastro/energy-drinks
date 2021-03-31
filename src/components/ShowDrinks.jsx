@@ -5,7 +5,7 @@ export default function ShowDrinks(props){
                 return(
             <li key={d.DrinkID} >
                 Name: {d.drink_name}<br></br>
-                Date Drank: {d.dateAdded.split('T')[0]}<br></br>
+                Date Drank: {d.dateAdded.split(' ')[0]}<br></br>
                 Ounces:{d.drink_oz}
                 </li>
         )
